@@ -270,7 +270,9 @@
             cart.forEach(item => {
                 const subtotal = item.product.price * item.quantity;
                 totalPrice += subtotal;
-                message += `• ${item.quantity}x *${item.product.name*//*.replace(/\*/g, '')}*/ - $${subtotal.toFixed(2)} ($${item.product.price.toFixed(2)} c/u)\n`;
+                // Limpiamos asteriscos en el nombre para no romper el formato de negrita en WhatsApp
+                const cleanName = (item.product.name || '').replace(/\*/g, '');
+                message += `• ${item.quantity}x *${cleanName}* - $${subtotal.toFixed(2)} ($${item.product.price.toFixed(2)} c/u)\n`;
             });
 
             message += `\n*Total a abonar: $${totalPrice.toFixed(2)}*\n\n¿Podría confirmarme disponibilidad y medios de pago? ¡Gracias!`;
