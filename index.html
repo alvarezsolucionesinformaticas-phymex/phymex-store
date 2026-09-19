@@ -18,6 +18,7 @@
                 <img id="store-logo" src="" alt="Logo" class="w-16 h-16 rounded-full object-cover bg-white shadow hidden border-2 border-white">
                 <div>
                     <h1 id="store-name" class="text-2xl font-bold">Cargando tienda...</h1>
+                    <!-- ID corregido a store-owner -->
                     <p id="store-owner" class="text-sm opacity-90"></p>
                 </div>
             </div>
@@ -136,7 +137,7 @@
             
             document.title = `${config.name} - Catálogo Oficial`;
             document.getElementById('store-name').textContent = config.name;
-            document.getElementById('store-location').textContent = `${config.city}, ${config.province} • Propietario: ${config.owner}`;
+            document.getElementById('store-owner').textContent = `Propietario: ${config.owner}`;
             
             const primaryColor = config.primary_color || '#6750A4';
             document.getElementById('store-header').style.backgroundColor = primaryColor;
@@ -156,7 +157,6 @@
             }
 
             grid.innerHTML = catalog.map((p, index) => {
-                // Resolución correcta de la ruta de la imagen del producto
                 let imageUrl = '';
                 if (p.image && p.image.trim() !== '') {
                     imageUrl = p.image.startsWith('http') ? p.image : `./artesanos/${storeSlug}/${p.image}`;
@@ -213,7 +213,7 @@
                 alert('Stock máximo alcanzado.');
             }
             updateCartUI();
-            openCartModal(); // Refrescar modal
+            openCartModal();
         }
 
         function updateCartUI() {
