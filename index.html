@@ -286,6 +286,11 @@
 
             const whatsappUrl = `https://wa.me/${currentConfig.whatsapp}?text=${encodeURIComponent(message)}`;
             window.open(whatsappUrl, '_blank');
+
+            // Vaciar carrito y limpiar interfaz tras enviar el pedido
+            cart = [];
+            updateCartUI();
+            closeCartModal();
         }
 
         function showError(msg) {
