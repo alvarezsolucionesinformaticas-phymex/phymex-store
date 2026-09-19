@@ -1,1 +1,1 @@
-{"total_products":3,"products":[{"id":1,"name":"ejemplo 1","description":"abc","price":100.0,"stock":10,"image":"product_1.png"},{"id":2,"name":"ejemplo 2","description":"cde","price":200.0,"stock":5,"image":"product_2.png"},{"id":3,"name":"ejemplo 3","description":"ghi","price":300.0,"stock":15,"image":"product_3.png"}]}
+{"total_products":2,"products":[{"id":1,"name":"ejemplo 1","description":"abc","price":100.0,"stock":10,"image":"product_1.png"},{"id":3,"name":"ejemplo 3","description":"ghi","price":300.0,"stock":15,"image":"product_3.png"}]}
