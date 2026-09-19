@@ -11,7 +11,7 @@
 </head>
 <body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col pb-24">
 
-    <!-- Header / Banner dinámico con logotipo rediseñado -->
+    <!-- Header / Banner dinámico -->
     <header id="store-header" class="shadow-md py-6 px-4 text-white transition-colors duration-300">
         <div class="max-w-4xl mx-auto flex items-center justify-between">
             <div class="flex items-center space-x-5">
@@ -65,26 +65,39 @@
 
     <!-- Modal del Carrito -->
     <div id="cart-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-2xl max-w-lg w-full p-6 max-h-[85vh] flex flex-col shadow-2xl">
-            <div class="flex justify-between items-center mb-4 border-b pb-3">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 max-h-[90vh] flex flex-col shadow-2xl">
+            <div class="flex justify-between items-center mb-3 border-b pb-3">
                 <h3 class="text-xl font-bold text-gray-800 flex items-center">
                     <i class="fas fa-shopping-bag mr-2 text-purple-600"></i> Tu Pedido
                 </h3>
                 <button onclick="closeCartModal()" class="text-gray-400 hover:text-gray-700 text-2xl font-bold">&times;</button>
             </div>
             
-            <div id="cart-items-list" class="overflow-y-auto flex-grow divide-y divide-gray-100 mb-4 pr-1">
+            <div id="cart-items-list" class="overflow-y-auto flex-grow divide-y divide-gray-100 mb-3 pr-1 max-h-48">
                 <!-- Items del carrito -->
             </div>
 
-            <div class="border-t pt-4 bg-white">
-                <div class="flex justify-between text-lg font-bold mb-4">
+            <!-- Datos de Contacto Obligatorios (Tabla orders) -->
+            <div class="border-t pt-3 mb-4 space-y-3 bg-gray-50 p-3 rounded-xl">
+                <h4 class="font-semibold text-gray-700 text-sm">Datos de Contacto</h4>
+                <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Nombre y Apellido *</label>
+                    <input type="text" id="customer-name" required class="w-full px-3 py-2 border rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Ej: Juan Pérez">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Teléfono / WhatsApp</label>
+                    <input type="tel" id="customer-phone" class="w-full px-3 py-2 border rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Ej: 3491555555">
+                </div>
+            </div>
+
+            <div class="border-t pt-3 bg-white">
+                <div class="flex justify-between text-lg font-bold mb-3">
                     <span class="text-gray-700">Total General:</span>
                     <span id="modal-total" class="text-emerald-600">$0.00</span>
                 </div>
                 <button onclick="checkoutWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl flex items-center justify-center space-x-2 shadow-lg transition-transform active:scale-95">
                     <i class="fab fa-whatsapp text-2xl"></i>
-                    <span class="text-base">Enviar Pedido por WhatsApp</span>
+                    <span class="text-base">Enviar Pedido y Generar Registro</span>
                 </button>
             </div>
         </div>
@@ -96,11 +109,11 @@
         <p class="text-xs text-gray-400 mt-1">de Aleph - Soluciones Informáticas</p>
     </footer>
 
-    <!-- Lógica de la Tienda y Carrito -->
+    <!-- Lógica de la Tienda, Carrito y Órdenes Acumulativas -->
     <script>
         let currentCatalog = [];
         let currentConfig = {};
-        let cart = []; // Almacena objetos { index, product, quantity }
+        let cart = [];
 
         async function loadStore() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -244,7 +257,7 @@
                 const subtotal = item.product.price * item.quantity;
                 totalPrice += subtotal;
                 return `
-                    <div class="py-3 flex justify-between items-center">
+                    <div class="py-2.5 flex justify-between items-center">
                         <div class="pr-2">
                             <h4 class="font-semibold text-gray-800 text-sm">${item.product.name}</h4>
                             <p class="text-xs text-gray-500">$${item.product.price.toFixed(2)} c/u</p>
@@ -269,28 +282,97 @@
             document.getElementById('cart-modal').classList.add('hidden');
         }
 
-        function checkoutWhatsApp() {
+        async function checkoutWhatsApp() {
             if (cart.length === 0) return;
 
-            let message = `¡Hola *${currentConfig.owner}*! Me interesa realizar el siguiente pedido desde el catálogo web de *${currentConfig.name}*:\n\n`;
+            const customerName = document.getElementById('customer-name').value.trim();
+            const customerPhone = document.getElementById('customer-phone').value.trim();
+
+            if (!customerName) {
+                alert('Por favor, ingresa tu Nombre y Apellido para continuar.');
+                document.getElementById('customer-name').focus();
+                return;
+            }
+
             let totalPrice = 0;
+            const itemsPayload = [];
 
             cart.forEach(item => {
                 const subtotal = item.product.price * item.quantity;
                 totalPrice += subtotal;
-                const cleanName = (item.product.name || '').replace(/\*/g, '');
-                message += `• ${item.quantity}x *${cleanName}* - $${subtotal.toFixed(2)} ($${item.product.price.toFixed(2)} c/u)\n`;
+                itemsPayload.push({
+                    product_id: item.product.id || (item.index + 1),
+                    quantity: item.quantity,
+                    unit_price: item.product.price
+                });
             });
 
-            message += `\n*Total a abonar: $${totalPrice.toFixed(2)}*\n\n¿Podría confirmarme disponibilidad y medios de pago? ¡Gracias!`;
+            const createdAtFormatted = new Date().toISOString().replace('T', ' ').substring(0, 19);
+            const urlParams = new URLSearchParams(window.location.search);
+            const storeSlug = urlParams.get('store');
+
+            // 1. Intentar leer el orders.json actual de la tienda para acumular pedidos
+            let existingOrders = [];
+            try {
+                const res = await fetch(`./artesanos/${storeSlug}/orders.json`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (Array.isArray(data)) {
+                        existingOrders = data;
+                    }
+                }
+            } catch (e) {
+                console.log("Iniciando nuevo registro de órdenes.");
+            }
+
+            // 2. Calcular número de orden (id) correlativo y acumulativo
+            const nextId = existingOrders.length > 0 ? Math.max(...existingOrders.map(o => o.id || 0)) + 1 : 1;
+
+            const newOrder = {
+                id: nextId,
+                customer_name: customerName,
+                customer_phone: customerPhone || "No proporcionado",
+                status: "Pendiente",
+                total: totalPrice,
+                created_at: createdAtFormatted,
+                items: itemsPayload
+            };
+
+            // 3. Acumular el nuevo pedido en el arreglo
+            existingOrders.push(newOrder);
+
+            // 4. Descargar el archivo orders.json actualizado (acumulando los anteriores y el nuevo)
+            downloadOrdersJson(existingOrders);
+
+            // 5. Armar mensaje de WhatsApp indicando el número de orden
+            let message = `¡Hola *${currentConfig.owner}*! Mi nombre es *${customerName}* (${customerPhone || 'Sin teléfono'}). Me interesa realizar el siguiente pedido *(Orden #${nextId})*:\n\n`;
+            
+            cart.forEach(item => {
+                const subtotal = item.product.price * item.quantity;
+                const cleanName = (item.product.name || '').replace(/\*/g, '');
+                message += `• ${item.quantity}x *${cleanName}* - $${subtotal.toFixed(2)}\n`;
+            });
+
+            message += `\n*Total general: $${totalPrice.toFixed(2)}*\n\n¿Podría confirmarme disponibilidad? ¡Gracias!`;
 
             const whatsappUrl = `https://wa.me/${currentConfig.whatsapp}?text=${encodeURIComponent(message)}`;
             window.open(whatsappUrl, '_blank');
 
-            // Vaciar carrito y limpiar interfaz tras enviar el pedido
+            // Limpiar carrito y cerrar modal
             cart = [];
             updateCartUI();
             closeCartModal();
+            alert(`¡Pedido #${nextId} creado con éxito!\nSe ha descargado el archivo "orders.json" actualizado con todos los pedidos pendientes para que los actualice en su repositorio.`);
+        }
+
+        function downloadOrdersJson(ordersArray) {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(ordersArray, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "orders.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
         }
 
         function showError(msg) {
