@@ -1,1 +1,1 @@
-{"total_products":0,"products":[]}
+{"total_products":3,"products":[{"id":1,"name":"ejemplo 1","description":"abc","price":100.0,"stock":10,"image":""},{"id":2,"name":"ejemplo 2","description":"def","price":200.0,"stock":5,"image":""},{"id":3,"name":"ejemplo 3","description":"","price":300.0,"stock":2,"image":""}]}
