@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "customer_name": "aaa",
+    "customer_phone": "3456",
+    "status": "Pendiente",
+    "total": 100,
+    "created_at": "2026-09-20 01:00:36",
+    "items": [
+      {
+        "product_id": 1,
+        "quantity": 1,
+        "unit_price": 100
+      }
+    ]
+  }
+]
