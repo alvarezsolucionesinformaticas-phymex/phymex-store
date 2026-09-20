@@ -311,7 +311,7 @@
             const urlParams = new URLSearchParams(window.location.search);
             const storeSlug = urlParams.get('store');
 
-            // CONFIGURACIÓN DE GITHUB (Reemplace con sus datos)
+            // CONFIGURACIÓN DE GITHUB
             const GITHUB_USER = "alvarezsolucionesinformaticas-phymex";
             const GITHUB_REPO = "phymex-store";
             const GITHUB_TOKEN = "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";
@@ -324,7 +324,7 @@
             btn.disabled = true;
 
             try {
-                // 1. Obtener el orders.json actual del repositorio para acumular los pedidos
+                // 1. Obtener el orders.json actual (si existe)
                 let existingOrders = [];
                 let fileSha = null;
 
@@ -358,8 +358,18 @@
                 // 3. Añadir el nuevo pedido al arreglo acumulativo
                 existingOrders.push(newOrder);
 
-                // 4. Guardar de vuelta el archivo actualizado directamente en la carpeta de GitHub
+                // 4. Preparar el cuerpo de la petición (JSON)
                 const updatedContentBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(existingOrders, null, 2))));
+                
+                const bodyData = {
+                    message: `Nuevo pedido #${nextId} de ${customerName} (${storeSlug})`,
+                    content: updatedContentBase64
+                };
+
+                // ¡IMPORTANTE!: Solo incluimos el SHA si el archivo ya existe en GitHub
+                if (fileSha) {
+                    bodyData.sha = fileSha;
+                }
 
                 const putRes = await fetch(apiUrl, {
                     method: "PUT",
@@ -368,19 +378,20 @@
                         "Content-Type": "application/json",
                         "Accept": "application/vnd.github.v3+json"
                     },
-                    body: JSON.stringify({
-                        message: `Nuevo pedido #${nextId} de ${customerName} (${storeSlug})`,
-                        content: updatedContentBase64,
-                        sha: fileSha
-                    })
+                    body: JSON.stringify(bodyData)
                 });
 
                 if (!putRes.ok) {
-                    throw new Error("Error al escribir el archivo en GitHub.");
+                    const errDetails = await putRes.json();
+                    throw new Error(`GitHub error (${putRes.status}): ${errDetails.message}`);
                 }
 
             } catch (e) {
-                console.error("Aviso de sincronización:", e);
+                console.error("Error de sincronización con GitHub:", e);
+                alert("No se pudo guardar el pedido en el repositorio: " + e.message);
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+                return; // Detiene la ejecución si falló para que lo revise
             } finally {
                 btn.innerHTML = originalHtml;
                 btn.disabled = false;
