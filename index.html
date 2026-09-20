@@ -97,7 +97,7 @@
                 </div>
                 <button onclick="checkoutWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl flex items-center justify-center space-x-2 shadow-lg transition-transform active:scale-95">
                     <i class="fab fa-whatsapp text-2xl"></i>
-                    <span class="text-base">Enviar Pedido y Generar Registro</span>
+                    <span class="text-base">Enviar Pedido por WhatsApp</span>
                 </button>
             </div>
         </div>
@@ -109,7 +109,7 @@
         <p class="text-xs text-gray-400 mt-1">de Aleph - Soluciones Informáticas</p>
     </footer>
 
-    <!-- Lógica de la Tienda, Carrito y Órdenes Acumulativas -->
+    <!-- Lógica de la Tienda, Carrito y Sincronización con GitHub -->
     <script>
         let currentCatalog = [];
         let currentConfig = {};
@@ -311,41 +311,83 @@
             const urlParams = new URLSearchParams(window.location.search);
             const storeSlug = urlParams.get('store');
 
-            // 1. Intentar leer el orders.json actual de la tienda para acumular pedidos
-            let existingOrders = [];
+            // CONFIGURACIÓN DE GITHUB (Reemplace con sus datos)
+            const GITHUB_USER = "TU_USUARIO_GITHUB";
+            const GITHUB_REPO = "TU_REPOSITORIO";
+            const GITHUB_TOKEN = "TU_GITHUB_PERSONAL_ACCESS_TOKEN"; // Token con permisos de escritura (repo)
+            const filePath = `artesanos/${storeSlug}/orders.json`;
+            const apiUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${filePath}`;
+
+            const btn = event.target.closest('button') || event.target;
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Registrando pedido...`;
+            btn.disabled = true;
+
             try {
-                const res = await fetch(`./artesanos/${storeSlug}/orders.json`);
-                if (res.ok) {
-                    const data = await res.json();
-                    if (Array.isArray(data)) {
-                        existingOrders = data;
+                // 1. Obtener el orders.json actual del repositorio para acumular los pedidos
+                let existingOrders = [];
+                let fileSha = null;
+
+                const getRes = await fetch(apiUrl, {
+                    headers: {
+                        "Authorization": `token ${GITHUB_TOKEN}`,
+                        "Accept": "application/vnd.github.v3+json"
                     }
+                });
+
+                if (getRes.ok) {
+                    const fileData = await getRes.json();
+                    fileSha = fileData.sha;
+                    const decodedContent = decodeURIComponent(escape(atob(fileData.content)));
+                    existingOrders = JSON.parse(decodedContent);
                 }
+
+                // 2. Calcular el id acumulativo correlativo
+                const nextId = existingOrders.length > 0 ? Math.max(...existingOrders.map(o => o.id || 0)) + 1 : 1;
+
+                const newOrder = {
+                    id: nextId,
+                    customer_name: customerName,
+                    customer_phone: customerPhone || "No proporcionado",
+                    status: "Pendiente",
+                    total: totalPrice,
+                    created_at: createdAtFormatted,
+                    items: itemsPayload
+                };
+
+                // 3. Añadir el nuevo pedido al arreglo acumulativo
+                existingOrders.push(newOrder);
+
+                // 4. Guardar de vuelta el archivo actualizado directamente en la carpeta de GitHub
+                const updatedContentBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(existingOrders, null, 2))));
+
+                const putRes = await fetch(apiUrl, {
+                    method: "PUT",
+                    headers: {
+                        "Authorization": `token ${GITHUB_TOKEN}`,
+                        "Content-Type": "application/json",
+                        "Accept": "application/vnd.github.v3+json"
+                    },
+                    body: JSON.stringify({
+                        message: `Nuevo pedido #${nextId} de ${customerName} (${storeSlug})`,
+                        content: updatedContentBase64,
+                        sha: fileSha
+                    })
+                });
+
+                if (!putRes.ok) {
+                    throw new Error("Error al escribir el archivo en GitHub.");
+                }
+
             } catch (e) {
-                console.log("Iniciando nuevo registro de órdenes.");
+                console.error("Aviso de sincronización:", e);
+            } finally {
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
             }
 
-            // 2. Calcular número de orden (id) correlativo y acumulativo
-            const nextId = existingOrders.length > 0 ? Math.max(...existingOrders.map(o => o.id || 0)) + 1 : 1;
-
-            const newOrder = {
-                id: nextId,
-                customer_name: customerName,
-                customer_phone: customerPhone || "No proporcionado",
-                status: "Pendiente",
-                total: totalPrice,
-                created_at: createdAtFormatted,
-                items: itemsPayload
-            };
-
-            // 3. Acumular el nuevo pedido en el arreglo
-            existingOrders.push(newOrder);
-
-            // 4. Descargar el archivo orders.json actualizado (acumulando los anteriores y el nuevo)
-            downloadOrdersJson(existingOrders);
-
-            // 5. Armar mensaje de WhatsApp indicando el número de orden
-            let message = `¡Hola *${currentConfig.owner}*! Mi nombre es *${customerName}* (${customerPhone || 'Sin teléfono'}). Me interesa realizar el siguiente pedido *(Orden #${nextId})*:\n\n`;
+            // 5. Armar mensaje de WhatsApp para el artesano
+            let message = `¡Hola *${currentConfig.owner}*! Mi nombre es *${customerName}* (${customerPhone || 'Sin teléfono'}). Me interesa realizar el siguiente pedido:\n\n`;
             
             cart.forEach(item => {
                 const subtotal = item.product.price * item.quantity;
@@ -362,17 +404,6 @@
             cart = [];
             updateCartUI();
             closeCartModal();
-            alert(`¡Pedido #${nextId} creado con éxito!\nSe ha descargado el archivo "orders.json" actualizado con todos los pedidos pendientes para que los actualice en su repositorio.`);
-        }
-
-        function downloadOrdersJson(ordersArray) {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(ordersArray, null, 2));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", "orders.json");
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
         }
 
         function showError(msg) {
