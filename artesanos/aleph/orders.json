@@ -73,5 +73,20 @@
         "unit_price": 20000
       }
     ]
+  },
+  {
+    "id": 6,
+    "customer_name": "Beron Luciana",
+    "customer_phone": "3855734037",
+    "status": "Pendiente",
+    "total": 20000,
+    "created_at": "2026-09-22 10:37:06",
+    "items": [
+      {
+        "product_id": 1,
+        "quantity": 1,
+        "unit_price": 20000
+      }
+    ]
   }
 ]
