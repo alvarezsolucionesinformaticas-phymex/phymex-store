@@ -11,8 +11,8 @@
 </head>
 <body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col pb-24">
 
-    <!-- Header / Banner dinámico -->
-    <header id="store-header" class="shadow-md py-6 px-4 text-white transition-colors duration-300">
+    <!-- Header / Banner dinámico (Fijo arriba para ambos) -->
+    <header id="store-header" class="sticky top-0 z-50 shadow-md py-6 px-4 text-white transition-colors duration-300">
         <div class="max-w-4xl mx-auto flex items-center justify-between">
             <div class="flex items-center space-x-5">
                 <img id="store-logo" src="" alt="Logo" class="w-24 h-24 sm:w-28 sm:h-28 rounded-xl object-cover bg-white shadow-lg hidden border-2 border-white flex-shrink-0">
@@ -33,27 +33,52 @@
         </div>
     </header>
 
-    <!-- Contenido Principal -->
-    <main class="max-w-4xl mx-auto px-4 py-8 flex-grow w-full">
-        <h2 class="text-xl font-semibold mb-6 text-gray-700 border-b pb-2">Catálogo de Productos</h2>
+    <!-- Contenedor Principal con Publicidades Laterales (Solo PC) -->
+    <div class="max-w-7xl mx-auto w-full px-4 flex-grow grid grid-cols-1 lg:grid-cols-[220px_1fr_220px] xl:grid-cols-[260px_1fr_260px] gap-6 py-8 items-start">
         
-        <!-- Estado de Carga -->
-        <div id="loading" class="text-center py-12">
-            <i class="fas fa-spinner fa-spin text-3xl text-gray-400"></i>
-            <p class="mt-2 text-gray-500">Sincronizando catálogo con la nube...</p>
-        </div>
+        <!-- Sidebar Izquierdo: Publicidad 1 y 2 (Solo visible en PC) -->
+        <aside class="hidden lg:flex flex-col gap-4 sticky top-28">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden p-2">
+                <img src="PUBLI_1.PNG" alt="Publicidad 1" class="w-full h-auto object-cover rounded-lg shadow-inner">
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden p-2">
+                <img src="PUBLI_2.PNG" alt="Publicidad 2" class="w-full h-auto object-cover rounded-lg shadow-inner">
+            </div>
+        </aside>
 
-        <!-- Mensaje de Error -->
-        <div id="error-container" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
-            <strong class="font-bold">Aviso del sistema:</strong>
-            <span id="error-message" class="block sm:inline">No se pudo cargar la información de la tienda.</span>
-        </div>
+        <!-- Contenido Central -->
+        <main class="w-full">
+            <h2 class="text-xl font-semibold mb-6 text-gray-700 border-b pb-2">Catálogo de Productos</h2>
+            
+            <!-- Estado de Carga -->
+            <div id="loading" class="text-center py-12">
+                <i class="fas fa-spinner fa-spin text-3xl text-gray-400"></i>
+                <p class="mt-2 text-gray-500">Sincronizando catálogo con la nube...</p>
+            </div>
 
-        <!-- Cuadrícula de Productos -->
-        <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-6 hidden">
-            <!-- Inyectado dinámicamente -->
-        </div>
-    </main>
+            <!-- Mensaje de Error -->
+            <div id="error-container" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+                <strong class="font-bold">Aviso del sistema:</strong>
+                <span id="error-message" class="block sm:inline">No se pudo cargar la información de la tienda.</span>
+            </div>
+
+            <!-- Cuadrícula de Productos -->
+            <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-6 hidden">
+                <!-- Inyectado dinámicamente -->
+            </div>
+        </main>
+
+        <!-- Sidebar Derecho: Publicidad 3 y 4 (Solo visible en PC) -->
+        <aside class="hidden lg:flex flex-col gap-4 sticky top-28">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden p-2">
+                <img src="PUBLI_3.PNG" alt="Publicidad 3" class="w-full h-auto object-cover rounded-lg shadow-inner">
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden p-2">
+                <img src="PUBLI_4.PNG" alt="Publicidad 4" class="w-full h-auto object-cover rounded-lg shadow-inner">
+            </div>
+        </aside>
+
+    </div>
 
     <!-- Barra Flotante del Carrito -->
     <div id="cart-bar" class="fixed bottom-0 left-0 right-0 bg-gray-900 text-white p-4 shadow-2xl transform translate-y-full transition-transform duration-300 flex justify-between items-center max-w-2xl mx-auto sm:rounded-t-2xl z-40 border-t border-gray-800">
@@ -86,7 +111,7 @@
                 <!-- Items del carrito -->
             </div>
 
-            <!-- Datos de Contacto Obligatorios (Tabla orders) -->
+            <!-- Datos de Contacto Obligatorios -->
             <div class="border-t pt-3 mb-4 space-y-3 bg-gray-50 p-3 rounded-xl">
                 <h4 class="font-semibold text-gray-700 text-sm">Datos de Contacto</h4>
                 <div>
@@ -172,7 +197,6 @@
             document.getElementById('store-name').textContent = config.name;
             document.getElementById('store-owner').textContent = `de ${config.owner}`;
             
-            // Renderizar enlace de Instagram de forma dinámica
             const instaLink = document.getElementById('instagram-link');
             if (config.address && config.address.trim() !== '') {
                 instaLink.href = `https://www.instagram.com/${config.address.trim()}`;
