@@ -21,6 +21,12 @@
                     <p id="store-owner" class="text-sm sm:text-base opacity-90 mt-1"></p>
                 </div>
             </div>
+            
+            <!-- Enlace e imagen de Instagram a la derecha -->
+            <a id="instagram-link" href="#" target="_blank" class="flex flex-col items-center text-center group hidden flex-shrink-0 ml-4">
+                <img src="LOGO_INSTAGRAM.png" alt="Instagram" class="w-10 h-10 sm:w-12 sm:h-12 object-contain mb-1 transition-transform group-hover:scale-110">
+                <span class="text-xs sm:text-sm font-medium opacity-90 group-hover:opacity-100">↑ Visita mi Instagram</span>
+            </a>
         </div>
     </header>
 
@@ -106,26 +112,18 @@
     <!-- Pie de página -->
     <footer class="bg-white border-t py-6 px-4 text-sm text-gray-500">
         <div class="max-w-4xl mx-auto flex flex-col items-center text-center space-y-4">
-            
-            <!-- Texto principal arriba -->
             <div>
                 <p>Potenciado por <span class="font-semibold text-purple-600">PhyMEx Store</span></p>
                 <p class="text-xs text-gray-400 mt-1">de Aleph - Soluciones Informáticas</p>
             </div>
-
-            <!-- Contenedor inferior para ambas imágenes -->
             <div class="flex items-center justify-center gap-6">
-                <!-- LOGO_NOMBRE.png -->
                 <div class="flex-shrink-0">
                     <img src="LOGO_NOMBRE.png" alt="Logo Nombre" class="h-10 sm:h-12 object-contain">
                 </div>
-
-                <!-- LOGO_ALEPH_1 (Ajuste la extensión a .jpg o .png según corresponda) -->
                 <div class="flex-shrink-0">
                     <img src="LOGO_ALEPH_1.png" alt="Logo Aleph" class="h-10 sm:h-12 object-contain">
                 </div>
             </div>
-
         </div>
     </footer>
     
@@ -170,6 +168,15 @@
             document.title = `${config.name} - Catálogo Oficial`;
             document.getElementById('store-name').textContent = config.name;
             document.getElementById('store-owner').textContent = `de ${config.owner}`;
+            
+            // Renderizar enlace de Instagram de forma dinámica
+            const instaLink = document.getElementById('instagram-link');
+            if (config.address && config.address.trim() !== '') {
+                instaLink.href = `https://www.instagram.com/${config.address.trim()}`;
+                instaLink.classList.remove('hidden');
+            } else {
+                instaLink.classList.add('hidden');
+            }
             
             const primaryColor = config.primary_color || '#6750A4';
             document.getElementById('store-header').style.backgroundColor = primaryColor;
@@ -327,7 +334,6 @@
                 });
             });
 
-            // Obtener la hora local exacta (evita el desfase UTC de 3 horas)
             const now = new Date();
             const year = now.getFullYear();
             const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -339,7 +345,6 @@
             const urlParams = new URLSearchParams(window.location.search);
             const storeSlug = urlParams.get('store');
 
-            // CONFIGURACIÓN DE GITHUB
             const GITHUB_USER = "alvarezsolucionesinformaticas-phymex";
             const GITHUB_REPO = "phymex-store";
             const partA = "ghp_i1OxjhJAM";
@@ -355,7 +360,6 @@
             btn.disabled = true;
 
             try {
-                // 1. Obtener el orders.json actual (si existe)
                 let existingOrders = [];
                 let fileSha = null;
 
@@ -373,7 +377,6 @@
                     existingOrders = JSON.parse(decodedContent);
                 }
 
-                // 2. Calcular el id acumulativo correlativo
                 const nextId = existingOrders.length > 0 ? Math.max(...existingOrders.map(o => o.id || 0)) + 1 : 1;
 
                 const newOrder = {
@@ -386,10 +389,8 @@
                     items: itemsPayload
                 };
 
-                // 3. Añadir el nuevo pedido al arreglo acumulativo
                 existingOrders.push(newOrder);
 
-                // 4. Preparar el cuerpo de la petición (JSON)
                 const updatedContentBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(existingOrders, null, 2))));
                 
                 const bodyData = {
@@ -397,7 +398,6 @@
                     content: updatedContentBase64
                 };
 
-                // ¡IMPORTANTE!: Solo incluimos el SHA si el archivo ya existe en GitHub
                 if (fileSha) {
                     bodyData.sha = fileSha;
                 }
@@ -422,13 +422,12 @@
                 alert("No se pudo guardar el pedido en el repositorio: " + e.message);
                 btn.innerHTML = originalHtml;
                 btn.disabled = false;
-                return; // Detiene la ejecución si falló para que lo revise
+                return;
             } finally {
                 btn.innerHTML = originalHtml;
                 btn.disabled = false;
             }
 
-            // 5. Armar mensaje de WhatsApp para el artesano
             let message = `¡Hola *${currentConfig.owner}*! Mi nombre es *${customerName}* (${customerPhone || 'Sin teléfono'}). Me interesa realizar el siguiente pedido:\n\n`;
             
             cart.forEach(item => {
@@ -442,7 +441,6 @@
             const whatsappUrl = `https://wa.me/${currentConfig.whatsapp}?text=${encodeURIComponent(message)}`;
             window.open(whatsappUrl, '_blank');
 
-            // Limpiar carrito y cerrar modal
             cart = [];
             updateCartUI();
             closeCartModal();
