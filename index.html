@@ -9,15 +9,15 @@
     <!-- FontAwesome para iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col pb-24">
+<body class="bg-gray-50 text-gray-800 lg:h-screen flex flex-col lg:overflow-hidden pb-24 lg:pb-0">
 
-    <!-- Header / Banner dinámico (Fijo arriba para ambos) -->
-    <header id="store-header" class="sticky top-0 z-50 shadow-md py-6 px-4 text-white transition-colors duration-300">
-        <div class="max-w-4xl mx-auto flex items-center justify-between">
+    <!-- Header / Banner dinámico (Fijo arriba) -->
+    <header id="store-header" class="sticky lg:static top-0 z-50 shadow-md py-6 px-4 md:px-8 text-white transition-colors duration-300 flex-shrink-0">
+        <div class="w-full flex items-center justify-between">
             <div class="flex items-center space-x-5">
                 <img id="store-logo" src="" alt="Logo" class="w-24 h-24 sm:w-28 sm:h-28 rounded-xl object-cover bg-white shadow-lg hidden border-2 border-white flex-shrink-0">
                 <div>
-                    <h1 id="store-name" class="text-2xl sm:text-3xl font-bold">Cargando tienda...</h1>
+                    <h1 id="store-name" class="text-2xl sm:text-3xl font-bold break-words whitespace-normal">Cargando tienda...</h1>
                     <p id="store-owner" class="text-sm sm:text-base opacity-90 mt-1"></p>
                 </div>
             </div>
@@ -33,11 +33,11 @@
         </div>
     </header>
 
-    <!-- Contenedor Principal con Publicidades Laterales (Solo PC) -->
-    <div class="max-w-7xl mx-auto w-full px-4 flex-grow grid grid-cols-1 lg:grid-cols-[220px_1fr_220px] xl:grid-cols-[260px_1fr_260px] gap-6 py-8 items-start">
+    <!-- Contenedor Principal con Publicidades Laterales (Fijas en PC, scroller central) -->
+    <div class="w-full px-4 md:px-6 flex-grow grid grid-cols-1 lg:grid-cols-[260px_1fr_260px] xl:grid-cols-[300px_1fr_300px] gap-6 py-8 items-start lg:overflow-hidden">
         
-        <!-- Sidebar Izquierdo: Publicidad 1 y 2 (Solo visible en PC) -->
-        <aside class="hidden lg:flex flex-col gap-4 sticky top-28">
+        <!-- Sidebar Izquierdo: Publicidad 1 y 2 (Fijo en PC) -->
+        <aside class="hidden lg:flex flex-col gap-4">
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden p-2">
                 <img src="PUBLI_1.png" alt="Publicidad 1" class="w-full h-auto object-cover rounded-lg shadow-inner">
             </div>
@@ -46,8 +46,8 @@
             </div>
         </aside>
 
-        <!-- Contenido Central -->
-        <main class="w-full">
+        <!-- Contenido Central (Con Scroll Independiente) -->
+        <main class="w-full lg:h-full lg:overflow-y-auto pr-2 pb-16">
             <h2 class="text-xl font-semibold mb-6 text-gray-700 border-b pb-2">Catálogo de Productos</h2>
             
             <!-- Estado de Carga -->
@@ -63,13 +63,13 @@
             </div>
 
             <!-- Cuadrícula de Productos -->
-            <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-6 hidden">
+            <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 hidden">
                 <!-- Inyectado dinámicamente -->
             </div>
         </main>
 
-        <!-- Sidebar Derecho: Publicidad 3 y 4 (Solo visible en PC) -->
-        <aside class="hidden lg:flex flex-col gap-4 sticky top-28">
+        <!-- Sidebar Derecho: Publicidad 3 y 4 (Fijo en PC) -->
+        <aside class="hidden lg:flex flex-col gap-4">
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden p-2">
                 <img src="PUBLI_3.png" alt="Publicidad 3" class="w-full h-auto object-cover rounded-lg shadow-inner">
             </div>
@@ -137,19 +137,19 @@
         </div>
     </div>
 
-    <!-- Pie de página -->
-    <footer class="bg-white border-t py-6 px-4 text-sm text-gray-500">
-        <div class="max-w-4xl mx-auto flex flex-col items-center text-center space-y-4">
+    <!-- Pie de página fijo al final del main o responsivo -->
+    <footer class="bg-white border-t py-4 px-4 text-sm text-gray-500 flex-shrink-0">
+        <div class="w-full flex flex-col md:flex-row items-center justify-between text-center gap-4">
             <div>
                 <p>Potenciado por <span class="font-semibold text-purple-600">PhyMEx Store</span></p>
                 <p class="text-xs text-gray-400 mt-1">de Aleph - Soluciones Informáticas</p>
             </div>
             <div class="flex items-center justify-center gap-6">
                 <div class="flex-shrink-0">
-                    <img src="LOGO_NOMBRE.png" alt="Logo Nombre" class="h-10 sm:h-12 object-contain">
+                    <img src="LOGO_NOMBRE.png" alt="Logo Nombre" class="h-8 sm:h-10 object-contain">
                 </div>
                 <div class="flex-shrink-0">
-                    <img src="LOGO_ALEPH_1.png" alt="Logo Aleph" class="h-10 sm:h-12 object-contain">
+                    <img src="LOGO_ALEPH_1.png" alt="Logo Aleph" class="h-8 sm:h-10 object-contain">
                 </div>
             </div>
         </div>
