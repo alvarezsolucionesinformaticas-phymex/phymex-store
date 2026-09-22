@@ -36,13 +36,10 @@
     <!-- Contenedor Principal con Publicidades Laterales (Fijas en PC, scroller central) -->
     <div class="w-full px-4 md:px-6 flex-grow grid grid-cols-1 lg:grid-cols-[260px_1fr_260px] xl:grid-cols-[300px_1fr_300px] gap-6 py-8 items-start lg:overflow-hidden">
         
-        <!-- Sidebar Izquierdo: Publicidad 1 y 2 (Fijo en PC) -->
+        <!-- Sidebar Izquierdo: Publicidad 1 (Fijo en PC) -->
         <aside class="hidden lg:flex flex-col gap-4">
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden p-2">
                 <img src="PUBLI_1.png" alt="Publicidad 1" class="w-full h-auto object-cover rounded-lg shadow-inner">
-            </div>
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden p-2">
-                <img src="PUBLI_2.png" alt="Publicidad 2" class="w-full h-auto object-cover rounded-lg shadow-inner">
             </div>
         </aside>
 
@@ -68,13 +65,10 @@
             </div>
         </main>
 
-        <!-- Sidebar Derecho: Publicidad 3 y 4 (Fijo en PC) -->
+        <!-- Sidebar Derecho: Publicidad 2 (Fijo en PC) -->
         <aside class="hidden lg:flex flex-col gap-4">
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden p-2">
-                <img src="PUBLI_3.png" alt="Publicidad 3" class="w-full h-auto object-cover rounded-lg shadow-inner">
-            </div>
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden p-2">
-                <img src="PUBLI_4.png" alt="Publicidad 4" class="w-full h-auto object-cover rounded-lg shadow-inner">
+                <img src="PUBLI_2.png" alt="Publicidad 2" class="w-full h-auto object-cover rounded-lg shadow-inner">
             </div>
         </aside>
 
@@ -137,20 +131,27 @@
         </div>
     </div>
 
-    <!-- Pie de página fijo al final del main o responsivo -->
+    <!-- Pie de página centrado con nuevos elementos -->
     <footer class="bg-white border-t py-4 px-4 text-sm text-gray-500 flex-shrink-0">
-        <div class="w-full flex flex-col md:flex-row items-center justify-between text-center gap-4">
+        <div class="w-full flex flex-col items-center justify-center text-center gap-3">
             <div>
                 <p>Potenciado por <span class="font-semibold text-purple-600">PhyMEx Store</span></p>
                 <p class="text-xs text-gray-400 mt-1">de Aleph - Soluciones Informáticas</p>
             </div>
-            <div class="flex items-center justify-center gap-6">
+            <div class="flex items-center justify-center gap-4 flex-wrap mt-2">
                 <div class="flex-shrink-0">
                     <img src="LOGO_NOMBRE.png" alt="Logo Nombre" class="h-8 sm:h-10 object-contain">
                 </div>
                 <div class="flex-shrink-0">
                     <img src="LOGO_ALEPH_1.png" alt="Logo Aleph" class="h-8 sm:h-10 object-contain">
                 </div>
+                <span class="text-gray-400 font-bold text-lg mx-1">→</span>
+                <a href="https://www.instagram.com/aleph.soluciones" target="_blank" class="flex-shrink-0 transition-transform hover:scale-110">
+                    <img src="LOGO_INSTAGRAM.png" alt="Instagram Aleph" class="h-8 sm:h-10 object-contain">
+                </a>
+                <a href="https://wa.me/5493491406641" target="_blank" class="flex-shrink-0 transition-transform hover:scale-110">
+                    <img src="LOGO_WHATSAPP.png" alt="WhatsApp Aleph" class="h-8 sm:h-10 object-contain">
+                </a>
             </div>
         </div>
     </footer>
