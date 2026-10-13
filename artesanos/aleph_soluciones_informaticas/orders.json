@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "customer_name": "Brian",
+    "customer_phone": "3491123456",
+    "status": "Pendiente",
+    "total": 1500,
+    "created_at": "2026-10-13 20:18:48",
+    "items": [
+      {
+        "product_id": 1,
+        "quantity": 1,
+        "unit_price": 1500
+      }
+    ]
+  }
+]
